@@ -1,0 +1,826 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>MiniGPT · Token inspector</title>
+<style>
+:root {
+  color-scheme:dark;
+  --bg:#101419;
+  --card:#191f26;
+  --inset:#12171c;
+  --line:#313942;
+  --ink:#eff3f4;
+  --dim:#acb6c0;
+  --mint:#82e3c3;
+  --violet:#c0acff;
+  --mono:"IBM Plex Mono",Consolas,monospace;
+  font:15px/1.5 "Inter",system-ui,sans-serif
+}
+* {
+  box-sizing:border-box
+}
+body {
+  margin:0;
+  background:var(--bg);
+  color:var(--ink)
+}
+header,.wrap {
+  max-width:1540px;
+  margin:auto;
+  padding:0 clamp(16px,3vw,54px)
+}
+header {
+  display:flex;
+  height:68px;
+  align-items:center;
+  gap:13px;
+  border-bottom:1px solid var(--line)
+}
+.brand {
+  font-size:22px;
+  font-weight:660;
+  letter-spacing:-.05em
+}
+.brand em {
+  font-style:normal;
+  color:var(--mint)
+}
+.mark {
+  width:26px;
+  height:28px;
+  background:repeating-linear-gradient(90deg,var(--mint) 0 4px,transparent 4px 7px);
+  clip-path:polygon(0 36%,18% 36%,18% 15%,44% 15%,44% 0,72% 0,72% 24%,100% 24%,100% 73%,72% 73%,72% 100%,44% 100%,44% 86%,18% 86%,18% 66%,0 66%)
+}
+#modelInfo {
+  margin-left:auto;
+  font:12px var(--mono);
+  color:var(--dim);
+  text-align:right
+}
+.heading {
+  margin:28px 0 20px;
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:15px
+}
+h1,h2,p {
+  margin:0
+}
+h1 {
+  font-size:clamp(26px,3vw,40px);
+  letter-spacing:-.05em;
+  font-weight:600;
+  line-height:1.2
+}
+h2 {
+  font-size:17px;
+  font-weight:600;
+  letter-spacing:-.025em
+}
+main {
+  display:grid;
+  grid-template-columns:minmax(238px,.78fr) minmax(0,2.55fr);
+  align-items:start;
+  gap:18px;
+  margin-bottom:34px
+}
+.stack {
+  display:grid;
+  gap:16px;
+  min-width:0
+}
+.card {
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:18px;
+  min-width:0
+}
+.controls {
+  display:grid;
+  gap:18px
+}
+.controls h2 {
+  margin-bottom:-3px
+}
+.field,.field label {
+  display:block
+}
+.field label,.fieldline,legend,.small {
+  color:var(--dim);
+  font-size:13px
+}
+.fieldline,.row,.panelhead,.between {
+  display:flex;
+  align-items:center;
+  gap:10px
+}
+.fieldline,.panelhead,.between {
+  justify-content:space-between
+}
+.fieldline output,.metric,.count {
+  font:12px var(--mono);
+  color:var(--mint)
+}
+.panelhead {
+  margin-bottom:15px;
+  flex-wrap:wrap
+}
+textarea,input[type=number],select {
+  border:1px solid #424d59;
+  border-radius:7px;
+  background:var(--inset);
+  color:var(--ink);
+  padding:8px 10px;
+  font:13px var(--mono)
+}
+textarea {
+  width:100%;
+  min-height:86px;
+  resize:vertical;
+  margin-top:5px;
+  line-height:1.5
+}
+input[type=range] {
+  width:100%;
+  accent-color:var(--mint);
+  margin:6px 0 0;
+  cursor:pointer
+}
+input[type=number] {
+  width:95px
+}
+input[type=checkbox] {
+  accent-color:var(--mint);
+  width:17px;
+  height:17px
+}
+button,select,input {
+  cursor:pointer
+}
+button {
+  background:#263039;
+  border:1px solid #46525e;
+  border-radius:7px;
+  color:var(--ink);
+  font:inherit;
+  padding:6px 12px
+}
+button:hover:enabled {
+  border-color:var(--mint)
+}
+button:disabled {
+  opacity:.55;
+  cursor:default
+}
+:focus-visible {
+  outline:2px solid var(--mint);
+  outline-offset:3px
+}
+.primary {
+  background:var(--mint);
+  border-color:var(--mint);
+  color:#10231c;
+  font-weight:650;
+  padding:10px 14px;
+  width:100%
+}
+.foot {
+  border-top:1px solid var(--line);
+  padding-top:14px
+}
+.status {
+  font:12px/1.5 var(--mono);
+  color:var(--dim);
+  overflow-wrap:anywhere
+}
+.error {
+  color:#ffb3a9
+}
+.promptEcho {
+  color:var(--dim)
+}
+#passage {
+  font:clamp(18px,1.7vw,24px)/1.5 Georgia,serif;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+  min-height:74px
+}
+.reading {
+  background:linear-gradient(120deg,#1e282b,var(--card) 75%)
+}
+.hint {
+  color:var(--dim);
+  font-size:13px
+}
+.track {
+  overflow-x:auto;
+  padding:5px 2px;
+  scrollbar-color:#4d5a63 var(--inset)
+}
+#lane {
+  display:flex;
+  width:max-content
+}
+.chip {
+  width:62px;
+  flex:none;
+  height:34px;
+  border-radius:5px;
+  border-color:#435b55;
+  margin:0 2px;
+  padding:2px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  font:12px var(--mono);
+  white-space:nowrap
+}
+.chip[aria-pressed=true] {
+  border-color:var(--mint);
+  box-shadow:inset 0 -2px var(--mint)
+}
+.track canvas {
+  display:block;
+  height:34px
+}
+.legend {
+  display:flex;
+  align-items:center;
+  gap:6px;
+  color:var(--dim);
+  font:11px var(--mono)
+}
+.swatch {
+  display:inline-block;
+  width:12px;
+  height:3px;
+  background:var(--mint)
+}
+.purple {
+  background:var(--violet)
+}
+.split {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  gap:16px
+}
+.seg {
+  display:inline-flex;
+  border-radius:7px;
+  border:1px solid var(--line);
+  padding:2px;
+  background:var(--inset)
+}
+.seg button {
+  font:11px var(--mono);
+  padding:5px 7px;
+  border:0;
+  background:transparent;
+  color:var(--dim)
+}
+.seg button[aria-pressed=true] {
+  color:var(--ink);
+  background:#36414e
+}
+#bars {
+  display:grid;
+  gap:6px;
+  margin:12px 0
+}
+.candidate {
+  display:grid;
+  grid-template-columns:minmax(60px,1.1fr) minmax(38px,1fr) 55px;
+  align-items:center;
+  gap:8px;
+  font:12px var(--mono)
+}
+.candidate .label {
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis
+}
+.candidate small {
+  display:block;
+  color:var(--dim);
+  font:10px var(--mono)
+}
+.rail {
+  height:7px;
+  background:#303941;
+  border-radius:4px;
+  overflow:hidden
+}
+.bar {
+  height:100%;
+  background:var(--mint)
+}
+.prob {
+  text-align:right;
+  color:var(--dim)
+}
+#inspectNote,#mass,#attnStatus,#cell {
+  font:12px/1.5 var(--mono);
+  color:var(--dim);
+  overflow-wrap:anywhere
+}
+#attnStatus.error {
+  color:#ffb3a9
+}
+.filters {
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:10px
+}
+.filters label {
+  display:flex;
+  align-items:center;
+  gap:5px;
+  color:var(--dim);
+  font-size:12px
+}
+.filters select {
+  padding:4px 7px
+}
+.plot {
+  margin:10px 0;
+  background:var(--inset);
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:8px
+}
+#heat {
+  display:block;
+  width:100%;
+  touch-action:pan-y
+}
+.status:empty {
+  display:none
+}
+button[hidden] {
+  display:none
+}
+@media(max-width:1000px) {
+  .split {
+    grid-template-columns:1fr
+  }
+  main {
+    grid-template-columns:240px minmax(0,1fr)
+  }
+}
+@media(max-width:680px) {
+  header {
+    height:auto;
+    min-height:56px
+  }
+  .heading {
+    margin:20px 0 14px
+  }
+  main {
+    grid-template-columns:1fr
+  }
+  .controls {
+    grid-template-columns:1fr 1fr;
+    gap:11px 16px
+  }
+  .controls h2,.wide,.foot {
+    grid-column:1/-1
+  }
+  .card {
+    padding:14px
+  }
+  #modelInfo {
+    max-width:62%;
+    font-size:10px
+  }
+  .stack,.split,main {
+    gap:12px
+  }
+}
+</style>
+</head>
+<body>
+<header><span class="mark" aria-hidden="true"></span><span class="brand">Mini<em>GPT</em></span><span id="modelInfo" role="status">Loading checkpoint…</span></header>
+<div class="wrap"><div class="heading"><h1>Token inspector</h1><span class="small" id="device"></span></div>
+<main>
+<form class="card controls" id="settings"><h2>Generation</h2>
+<div class="field wide"><label for="prompt">Prompt</label><textarea id="prompt" required spellcheck="false">KING RICHARD:</textarea></div>
+<div><label class="fieldline" for="temperature">Temperature <output id="temperatureOut">0.8</output></label><input id="temperature" type="range" min="0" max="5" step=".05" value=".8"></div>
+<div><label class="fieldline" for="top_k">Top-k <output id="top_kOut">40</output></label><input id="top_k" type="range" min="0" max="100" value="40"></div>
+<div><label class="fieldline" for="top_p">Top-p <output id="top_pOut">0.95</output></label><input id="top_p" type="range" min=".01" max="1" step=".01" value=".95"></div>
+<div><label class="fieldline" for="max_new_tokens">Max tokens <output id="max_new_tokensOut">24</output></label><input id="max_new_tokens" type="range" min="1" max="256" value="24"></div>
+<label class="fieldline" for="seed">Seed <input type="number" id="seed" min="0" max="9007199254740991" value="42" required></label>
+<label class="fieldline" for="cache">KV-cache <input type="checkbox" id="cache" checked></label>
+<div class="foot"><button class="primary" id="go" disabled>Generate <span aria-hidden="true">→</span></button><button type="button" class="primary" id="stop" hidden>Stop generation</button></div>
+<span id="runStatus" class="status wide" role="status"></span><button type="button" id="retry" class="wide" hidden>Reload model</button>
+</form>
+<div class="stack">
+<section class="card reading"><div class="panelhead"><h2>Continuation</h2><span class="metric" id="speed">— tok/s</span></div><div id="passage"><span class="promptEcho" id="echo"></span><span id="generated"></span></div></section>
+<section class="card"><div class="panelhead"><h2>Token stream</h2><span class="count" id="count">0 tokens</span></div>
+<p id="laneHint" class="hint">Generate to inspect each token and its probability.</p>
+<div class="track" id="track"><div id="lane" aria-label="Generated tokens"></div><canvas id="spark" height="34" width="1" aria-label="Entropy by token, in nats"></canvas></div>
+<div class="legend"><span class="swatch purple"></span>Raw entropy <span class="swatch"></span>Filtered entropy</div></section>
+<div class="split">
+<section class="card"><div class="panelhead"><h2>Candidates</h2><div class="seg" aria-label="Probability distribution"><button id="raw" aria-pressed="true">Raw</button><button id="filtered" aria-pressed="false">Filtered</button></div></div>
+<p id="inspectNote">Select a generated token.</p><div id="bars"></div><p id="mass"></p></section>
+<section class="card"><div class="panelhead"><h2>Attention</h2><div class="seg" aria-label="Attention view"><button id="stepView" aria-pressed="false">Token row</button><button id="promptView" aria-pressed="true">Prompt</button></div></div>
+<div class="filters"><label>Layer <select id="layer" aria-label="Layer"></select></label><label>Head <select id="head" aria-label="Head"></select></label></div>
+<p id="attnStatus" role="status"></p><div class="plot"><canvas id="heat" tabindex="0" height="1" aria-label="Attention weights. Use arrow keys to inspect query and key positions."></canvas></div><p id="cell" role="status"></p></section>
+</div></div></main></div>
+<script>
+
+'use strict';
+const $ = id => document.getElementById(id);
+const ctx = id => $(id).getContext('2d');
+const label = token =>
+    token.display.replaceAll(' ', '·').replaceAll('\n', '↵').replaceAll('\t', '⇥').replaceAll(
+        '\r', '␍');
+const make = (tag, cls, value) => {
+  const el = document.createElement(tag);
+  el.className = cls;
+  if (value !== undefined) el.textContent = value;
+  return el;
+};
+const percent = x => (100 * x).toFixed(2) + '%';
+let model, steps = [], selected = -1, filtered = false, active, lastRun, panel = 'prompt', pending,
+           revision = 0;
+let matrix = [], keys = [], rowOffset = 0, cursor = [0, 0], pinned = false, traceSelection = '';
+const pick = () => ({
+  layer: Number($('layer').value),
+  head: $('head').value === 'mean' ? 'mean' : Number($('head').value)
+});
+const selectionKey = () => JSON.stringify(pick());
+function status(id, msg, error = false) {
+  $(id).textContent = msg;
+  $(id).classList.toggle('error', error);
+}
+async function request(path, body, signal) {
+  const res = await fetch(
+      path,
+      body ? {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(body),
+        signal
+      } :
+             {signal});
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    const msg = Array.isArray(err.detail) ?
+        err.detail.map(e => e.loc.slice(1).join('.') + ' ' + e.msg).join(' · ') :
+        err.detail;
+    throw Error(msg || res.statusText);
+  }
+  return res;
+}
+async function load() {
+  $('retry').hidden = true;
+  status('modelInfo', 'Loading checkpoint…');
+  status('runStatus', '');
+  try {
+    model = await (await request('/model')).json();
+    const c = model.config;
+    status('modelInfo', (model.checkpoint?.split(/[\\/]/).pop() || 'In-memory model') + '  /  ' + [
+      c.norm_type, c.pos_encoding, c.mlp_type
+    ].join(' · '));
+    $('device').textContent =
+        model.device.toUpperCase() + '  /  ' + c.block_size + ' token context';
+    for (const [id, n] of [['layer', c.n_layer], ['head', c.n_head]]) {
+      $(id).replaceChildren();
+      if (id === 'head') $(id).add(new Option('Mean', 'mean'));
+      for (let i = 0; i < n; i++) $(id).add(new Option(String(i), String(i)));
+    }
+    $('max_new_tokens').max = Math.min(model.max_new_tokens, c.block_size);
+    $('top_k').max = c.vocab_size;
+    for (const id of sliders) $(id).dispatchEvent(new Event('input'));
+    $('go').disabled = false;
+    await refresh();
+  } catch (e) {
+    status('modelInfo', 'Checkpoint unavailable');
+    status('runStatus', e.message, true);
+    $('retry').hidden = false;
+  }
+}
+const sliders = ['temperature', 'top_k', 'top_p', 'max_new_tokens'];
+for (const id of sliders)
+  $(id).oninput = () => $(id + 'Out').textContent =
+      id === 'top_k' && $(id).value === '0' ? 'Off' : $(id).value;
+function drawEntropy() {
+  const c = $('spark');
+  c.width = Math.max(1, steps.length * 66);
+  c.style.width = c.width + 'px';
+  const g = ctx('spark'), scale = Math.log(model.vocab_size);
+  for (const [field, color] of [['raw_entropy', '#c0acff'], ['final_entropy', '#82e3c3']]) {
+    g.strokeStyle = g.fillStyle = color;
+    g.lineWidth = 2;
+    g.beginPath();
+    steps.forEach((s, i) => {
+      let x = i * 66 + 33, y = 30 - 26 * s[field] / scale;
+      i ? g.lineTo(x, y) : g.moveTo(x, y);
+    });
+    g.stroke();
+    steps.forEach((s, i) => g.fillRect(i * 66 + 32, 29 - 26 * s[field] / scale, 3, 3));
+  }
+}
+function candidates() {
+  $('bars').replaceChildren();
+  const s = steps[selected];
+  if (!s) {
+    $('inspectNote').textContent = 'Select a generated token.';
+    $('mass').textContent = '';
+    return;
+  }
+  const field = filtered ? 'final_probability' : 'raw_probability';
+  $('inspectNote').textContent = 'Draw ' + (selected + 1) + ' · ' + label(s.chosen) + ' · ' +
+      Number(s[filtered ? 'final_entropy' : 'raw_entropy']).toFixed(3) + ' nats';
+  for (const c of s.candidates) {
+    const row = make('div', 'candidate'), name = make('span', 'label', label(c)),
+          rail = make('div', 'rail'), bar = make('div', 'bar');
+    name.append(make('small', '', c.bytes_hex));
+    name.title = 'ID ' + c.id + ' · ' + c.bytes_hex;
+    bar.style.width = 100 * c[field] + '%';
+    rail.append(bar);
+    row.append(name, rail, make('span', 'prob', percent(c[field])));
+    $('bars').append(row);
+  }
+  $('mass').textContent = 'Outside top ten · ' + percent(s[filtered ? 'final_other' : 'raw_other']);
+}
+function setPlot(rows, tokens, offset = 0) {
+  matrix = rows;
+  keys = tokens;
+  rowOffset = offset;
+  cursor = [0, 0];
+  drawHeat();
+  cell();
+}
+function drawHeat() {
+  const c = $('heat'), width = Math.max(1, c.clientWidth || 240);
+  const height = matrix.length === 1 ? 72 : Math.max(80, Math.min(width, 300));
+  c.width = width * 2;
+  c.height = height * 2;
+  c.style.height = height + 'px';
+  const g = ctx('heat');
+  g.scale(2, 2);
+  if (!keys.length) return;
+  const left = 32, top = 16, w = (width - left) / keys.length, h = (height - top) / matrix.length;
+  g.font = '10px monospace';
+  g.fillStyle = '#acb6c0';
+  keys.forEach((_, x) => {
+    if (x % Math.max(1, Math.ceil(27 / w)) === 0) g.fillText(x, left + x * w, 10);
+  });
+  matrix.forEach((row, y) => {
+    if (y % Math.max(1, Math.ceil(14 / h)) === 0) {
+      g.fillStyle = '#acb6c0';
+      g.fillText(y + rowOffset, 2, top + y * h + Math.min(h, 13));
+    }
+    row.forEach((p, x) => {
+      const a = Math.sqrt(p);
+      g.fillStyle =
+          'rgb(' + [29 + 105 * a, 38 + 190 * a, 47 + 147 * a].map(Math.floor).join(',') + ')';
+      g.fillRect(left + x * w, top + y * h, Math.ceil(w), Math.ceil(h));
+    });
+  });
+  g.strokeStyle = '#fff';
+  g.lineWidth = 1;
+  g.strokeRect(
+      left + cursor[1] * w + .5, top + cursor[0] * h + .5, Math.max(1, w - 1), Math.max(1, h - 1));
+}
+function cell() {
+  if (!keys.length) {
+    $('cell').textContent = '';
+    return;
+  }
+  const [y, x] = cursor;
+  const q = y + rowOffset;
+  $('cell').textContent = 'Query ' + q + ' ' + label(keys[q]) + ' → key ' + x + ' ' +
+      label(keys[x]) + ' · ' + percent(matrix[y][x]);
+}
+$('heat').onpointermove = e => {
+  if (!keys.length) return;
+  const c = $('heat'), r = c.getBoundingClientRect();
+  cursor = [
+    Math.min(
+        matrix.length - 1,
+        Math.max(0, Math.floor((e.clientY - r.top - 16) / (r.height - 16) * matrix.length))),
+    Math.min(
+        keys.length - 1,
+        Math.max(0, Math.floor((e.clientX - r.left - 32) / (r.width - 32) * keys.length)))
+  ];
+  drawHeat();
+  cell();
+};
+$('heat').onkeydown = e => {
+  const move = {ArrowLeft: [0, -1], ArrowRight: [0, 1], ArrowUp: [-1, 0], ArrowDown: [1, 0]}[e.key];
+  if (!move || !keys.length) return;
+  e.preventDefault();
+  cursor = cursor.map((v, i) => Math.max(0, Math.min((i ? keys : matrix).length - 1, v + move[i])));
+  drawHeat();
+  cell();
+};
+function showRow() {
+  const s = steps[selected];
+  if (!s) {
+    setPlot([], []);
+    status('attnStatus', 'Select a generated token.');
+    return;
+  }
+  setPlot([s.attention], s.context_tokens, s.context_tokens.length - 1);
+  status('attnStatus', 'Last context position before draw ' + (selected + 1));
+}
+function buttons() {
+  for (const [id, value] of [
+           ['raw', !filtered], ['filtered', filtered], ['stepView', panel === 'step'],
+           ['promptView', panel === 'prompt']])
+    $(id).setAttribute('aria-pressed', String(value));
+}
+async function refresh() {
+  pending?.abort();
+  const ticket = ++revision;
+  pending = new AbortController();
+  buttons();
+  try {
+    if (panel === 'prompt') {
+      setPlot([], []);
+      if (!$('prompt').value) {
+        status('attnStatus', 'Enter a prompt to view attention.');
+        return;
+      }
+      status('attnStatus', 'Loading prompt attention…');
+      const data =
+          await (await request('/attention', {text: $('prompt').value, ...pick()}, pending.signal))
+              .json();
+      if (ticket !== revision) return;
+      setPlot(data.matrix, data.tokens);
+      status('attnStatus', 'Prompt queries ↓ · keys →');
+      return;
+    }
+    if (!steps.length || traceSelection === selectionKey()) {
+      showRow();
+      return;
+    }
+    setPlot([], []);
+    status('attnStatus', 'Tracing selected layer and head…');
+    const data =
+        await (await request(
+                   '/trace', {...lastRun, ...pick(), max_new_tokens: steps.length}, pending.signal))
+            .json();
+    if (ticket !== revision) return;
+    if (data.steps.length !== steps.length ||
+        data.steps.some((s, i) => s.chosen.id !== steps[i].chosen.id))
+      throw Error('Trace replay produced different tokens.');
+    data.steps.forEach((s, i) => {
+      steps[i].attention = s.attention;
+    });
+    traceSelection = selectionKey();
+    showRow();
+  } catch (e) {
+    if (ticket === revision && e.name !== 'AbortError') {
+      setPlot([], []);
+      status('attnStatus', e.message, true);
+    }
+  }
+}
+function selectStep(i, user) {
+  if (selected >= 0) $('lane').children[selected]?.setAttribute('aria-pressed', 'false');
+  selected = i;
+  $('lane').children[i].setAttribute('aria-pressed', 'true');
+  candidates();
+  if (user) {
+    pinned = true;
+    if (panel !== 'step') {
+      pending?.abort();
+      revision++;
+    }
+    panel = 'step';
+  }
+  if (panel === 'step' && traceSelection === selectionKey()) {
+    buttons();
+    showRow();
+  } else if (user) {
+    refresh();
+  }
+}
+function append(s) {
+  const idx = steps.push(s) - 1, chip = make('button', 'chip', label(s.chosen));
+  chip.title = 'Draw ' + (idx + 1) + ' · ' + s.chosen.bytes_hex + ' · ' +
+      percent(s.chosen.final_probability);
+  chip.setAttribute('aria-pressed', 'false');
+  chip.setAttribute('aria-label', chip.title + ' · ' + label(s.chosen));
+  chip.style.background = 'rgb(' +
+      [30, 43, 44]
+          .map((n, i) => n + [26, 78, 63][i] * Math.sqrt(s.chosen.final_probability))
+          .join(',') +
+      ')';
+  for (const action of ['onpointerenter', 'onfocus', 'onclick'])
+    chip[action] = () => selectStep(idx, true);
+  $('lane').append(chip);
+  $('generated').textContent += s.text;
+  $('count').textContent = steps.length + (steps.length === 1 ? ' token' : ' tokens');
+  $('speed').textContent = s.tokens_per_second.toFixed(1) + ' tok/s';
+  drawEntropy();
+  if (!pinned) {
+    selectStep(idx, false);
+    $('track').scrollLeft = $('track').scrollWidth;
+  }
+}
+async function run(e) {
+  e.preventDefault();
+  if (active) return;
+  lastRun = {
+    prompt: $('prompt').value,
+    temperature: +$('temperature').value,
+    top_k: +$('top_k').value || null,
+    top_p: +$('top_p').value,
+    max_new_tokens: +$('max_new_tokens').value,
+    seed: +$('seed').value,
+    use_cache: $('cache').checked
+  };
+  pending?.abort();
+  revision++;
+  active = new AbortController();
+  panel = 'step';
+  buttons();
+  pinned = false;
+  steps = [];
+  selected = -1;
+  $('lane').replaceChildren();
+  $('laneHint').hidden = true;
+  $('echo').textContent = lastRun.prompt;
+  $('generated').textContent = '';
+  $('speed').textContent = '— tok/s';
+  $('count').textContent = '0 tokens';
+  drawEntropy();
+  candidates();
+  showRow();
+  $('go').hidden = true;
+  $('stop').hidden = false;
+  $('layer').disabled = $('head').disabled = true;
+  traceSelection = selectionKey();
+  status('runStatus', 'Streaming…');
+  try {
+    const res = await request('/generate/stream', {...lastRun, ...pick()}, active.signal);
+    const reader = res.body.getReader(), decoder = new TextDecoder();
+    let buffer = '';
+    while (true) {
+      const {value, done} = await reader.read();
+      buffer += decoder.decode(value, {stream: !done});
+      let end;
+      while ((end = buffer.indexOf('\n\n')) !== -1) {
+        const frame = buffer.slice(0, end);
+        buffer = buffer.slice(end + 2);
+        const line = frame.split('\n').find(x => x.startsWith('data: '));
+        if (line) append(JSON.parse(line.slice(6)));
+      }
+      if (done) break;
+    }
+    if (!steps.at(-1)?.finished) throw Error('Stream closed before the last token.');
+    status('runStatus', 'Generation complete.');
+  } catch (err) {
+    status(
+        'runStatus', err.name === 'AbortError' ? 'Generation stopped.' : err.message,
+        err.name !== 'AbortError');
+  } finally {
+    active = null;
+    $('go').hidden = false;
+    $('stop').hidden = true;
+    $('layer').disabled = $('head').disabled = false;
+  }
+}
+$('settings').onsubmit = run;
+$('stop').onclick = () => active?.abort();
+$('retry').onclick = load;
+$('raw').onclick = () => {
+  filtered = false;
+  buttons();
+  candidates();
+};
+$('filtered').onclick = () => {
+  filtered = true;
+  buttons();
+  candidates();
+};
+$('promptView').onclick = () => {
+  panel = 'prompt';
+  refresh();
+};
+$('stepView').onclick = () => {
+  panel = 'step';
+  refresh();
+};
+$('head').onchange = $('layer').onchange = refresh;
+let debounce;
+$('prompt').oninput = () => {
+  if (!steps.length) $('echo').textContent = $('prompt').value;
+  if (panel === 'prompt') {
+    clearTimeout(debounce);
+    debounce = setTimeout(refresh, 250);
+  }
+};
+window.addEventListener('resize', drawHeat);
+$('echo').textContent = $('prompt').value;
+load();
+</script></body></html>

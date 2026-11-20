@@ -268,7 +268,7 @@ def main(argv: Sequence[str] | None = None) -> None:
     decision["lr"] = check["selected_lr"]
     print(f"Transfer probes {check['probes']}. Selected {decision['lr']}.", flush=True)
     cfg = run_config(spec, args.seed, args.token_budget, decision["lr"])
-    result = run_one(root, "final", spec.name, cfg)
+    result = run_one(root, "final", spec.name, cfg, require_weights=True)
     source = check_dir(root, "final", cfg, False) / "best.pt"
     report = publish(root, source, result, decision, args.seed)
     last_source = source.with_name("last.pt")

@@ -47,3 +47,11 @@ On the final shape, the seed-zero LR probes favored 0.0015 over 0.003. The 5,024
 | Written interpretation | Present | [Analysis and limitations](analysis.md). |
 | KV benchmark | Present | [Report](kv_cache_benchmark.md), [figure](img/kv_cache_benchmark.png) and [raw measurements](../results/kv_cache_benchmark.json). |
 | Generation samples | Present | [Nine continuations](samples_final.md) and [token IDs and greedy check](../results/final_model.json). |
+
+## 2026-11-20 · Phase 4 glass-box API, UI and packaging
+
+Added the checkpoint-backed token inspector, streaming API, study notes, results-backed README, Docker packaging, CI and Windows tasks. The trace exposes raw and filtered probability, entropy, token bytes and causal attention for each draw. Captured both layouts in Chrome. The final trainer can rebuild weights from a checkout containing only published metrics. Existing experiments supplied all model measurements. [README](../README.md) · [Design notes](design_notes.md) · [Desktop](img/glass_box_desktop.png) · [Mobile](img/glass_box_mobile.png)
+
+Ruff passed. The full CPU suite, including slow tests, recorded 176 passed and 2 CUDA skips. The CI test selection also passed in an isolated source tree without local assets. The real-checkpoint smoke test verified all 7 routes and server shutdown. The built wheel served its packaged UI outside the checkout. The checkpoint and tokenizer hashes matched the final summary. At 60,401,259 bytes, final.pt is a candidate for a GitHub release asset. [Test results](../results/phase4_verification.json) · [Smoke and file size](../results/phase4_smoke.json) · [Recorded hashes](../results/final_summary.json)
+
+Open checks are the Docker build and runtime, the hosted CI matrix, and CUDA transfer and AMP. Docker and the command named `make` were unavailable. The smoke script ran directly under the Windows venv, the PowerShell lint target passed, and MinGW Make expanded the recipes in a dry run. Starlette emitted a deprecation warning for the project's allowed httpx test client.

@@ -141,6 +141,21 @@ def test_same_named_quick_and_full_results_and_locks(tmp_path: Path, small_fit: 
     assert official["mode"] == "full" and fast["mode"] == "quick"
 
 
+def test_final_weights_rebuilt_from_metrics_only(tmp_path: Path, small_fit: RunConfig) -> None:
+    cfg = small_fit
+    published = run_one(tmp_path, "final", "small", cfg)
+    checks = check_dir(tmp_path, "final", cfg, False)
+    (checks / "best.pt").unlink()
+    (checks / "last.pt").unlink()
+    rebuilt = run_one(tmp_path, "final", "small", cfg, require_weights=True)
+    assert rebuilt["best_val"] == published["best_val"]
+    assert (checks / "best.pt").is_file() and (checks / "last.pt").is_file()
+    # Simulate interruption after the rebuilt last.pt but before the new JSON was published.
+    write_json(tmp_path / "results/runs/final/small_s0.json", published)
+    recovered = run_one(tmp_path, "final", "small", cfg, require_weights=True)
+    assert recovered["history"] == rebuilt["history"]
+
+
 def test_real_probe_and_persisted_plan(
     tmp_path: Path, small_fit: RunConfig, monkeypatch: pytest.MonkeyPatch
 ) -> None:

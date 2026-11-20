@@ -1,0 +1,16 @@
+{
+  "checkpoint": "checkpoints\\final.pt",
+  "checkpoint_bytes": 60401259,
+  "seed": 42,
+  "device": "cpu",
+  "routes": [
+    "/",
+    "/favicon.ico",
+    "/model",
+    "/generate",
+    "/generate/stream",
+    "/trace",
+    "/attention"
+  ],
+  "server_stopped": true
+}

@@ -45,6 +45,7 @@ class StepInfo:
     raw_entropy: float
     final_entropy: float
     past_kv: KVCache | None = None
+    attention_row: Tensor | None = None
 
     def top_candidates(self, k: int = 5, *, raw: bool = False) -> list[tuple[int, float]]:
         """Return (token ID, probability) pairs, breaking ties by ascending token ID."""
@@ -129,6 +130,8 @@ def next_token_distribution(
     use_cache: bool = True,
     generator: torch.Generator | None = None,
     history: Sequence[int] | None = None,
+    attention_layer: int | None = None,
+    attention_head: int | None = None,
 ) -> StepInfo:
     """Inspect one draw. With a cache, supply only the new suffix and full history for penalties."""
     ids = _ids(input_ids)
@@ -145,6 +148,7 @@ def next_token_distribution(
             torch.tensor([ids], dtype=torch.long, device=device),
             past_kv=past_kv,
             use_cache=use_cache,
+            return_attn=attention_layer is not None,
         )
     finally:
         if training:
@@ -162,6 +166,10 @@ def next_token_distribution(
     chosen = (
         final.argmax() if temperature == 0 else torch.multinomial(final, 1, generator=generator)
     )
+    row = None
+    if attention_layer is not None:
+        rows = result[2][attention_layer][0, :, -1, :]
+        row = rows.mean(0) if attention_head is None else rows[attention_head].clone()
     return StepInfo(
         int(chosen.item()),
         raw,
@@ -169,6 +177,7 @@ def next_token_distribution(
         float(torch.special.entr(raw).sum()),
         float(torch.special.entr(final).sum()),
         result[-1] if use_cache else None,
+        row,
     )
 
 
@@ -185,6 +194,8 @@ def generate_stream(
     seed: int = 42,
     use_cache: bool = True,
     window_policy: WindowPolicy = "error",
+    attention_layer: int | None = None,
+    attention_head: int | None = None,
 ) -> Iterator[StepInfo]:
     """Yield new tokens only. Re-prefilling reproduces a fresh forward on the cropped window."""
     history = _ids(input_ids)
@@ -212,6 +223,8 @@ def generate_stream(
             top_k=top_k,
             top_p=top_p,
             repetition_penalty=repetition_penalty,
+            attention_layer=attention_layer,
+            attention_head=attention_head,
         )
         cache = info.past_kv
         history.append(info.token_id)
@@ -222,6 +235,7 @@ def generate_stream(
             info.final_distribution,
             info.raw_entropy,
             info.final_entropy,
+            attention_row=info.attention_row,
         )
         if info.token_id == eos_id:
             return

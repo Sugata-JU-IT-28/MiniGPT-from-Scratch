@@ -7,7 +7,7 @@ from dataclasses import asdict
 from pathlib import Path
 from typing import Any
 
-from minigpt.checkpoint import run_writer
+from minigpt.checkpoint import load_checkpoint, run_writer
 from minigpt.config import RunConfig
 from minigpt.experiments import QUICK_TOKENS, SEEDS, SUITES, run_config, select_lr
 from minigpt.io import write_json
@@ -32,7 +32,13 @@ def check_dir(root: Path, suite: str, cfg: RunConfig, quick: bool) -> Path:
 
 
 def run_one(
-    root: Path, suite: str, name: str, cfg: RunConfig, *, quick: bool = False
+    root: Path,
+    suite: str,
+    name: str,
+    cfg: RunConfig,
+    *,
+    quick: bool = False,
+    require_weights: bool = False,
 ) -> dict[str, Any]:
     """Restore in-flight state, or reuse a fully published run and its exact CSV history."""
     mode = "quick" if quick else "full"
@@ -49,13 +55,28 @@ def run_one(
                 or (result["suite"], result["name"], result["mode"]) != (suite, name, mode)
             ):
                 raise ValueError(f"Existing record does not match the requested run: {record}")
-            if not log.is_file():
-                write_metrics(log, result["history"])
-            print(f"SKIP {record}", flush=True)
-            return result
+            # A fresh clone has published metrics but no weights. During a rebuild
+            # the old record can also outlive the new fit's last update. Compare the
+            # checkpointed history before trusting that the metrics and weights agree.
+            complete = not require_weights or (
+                (checkpoints / "best.pt").is_file()
+                and (checkpoints / "last.pt").is_file()
+                and load_checkpoint(checkpoints / "last.pt")["history"] == result["history"]
+            )
+            if complete:
+                if not log.is_file():
+                    write_metrics(log, result["history"])
+                print(f"SKIP {record}", flush=True)
+                return result
         trainer = Trainer(cfg, root, metrics_path=log, checkpoint_dir=checkpoints)
         if trainer.last.is_file():
-            trainer.resume()
+            can_resume = True
+            if require_weights and not trainer.best.is_file():
+                previous = load_checkpoint(trainer.last)
+                can_resume = previous["best_step"] == previous["step"]
+                del previous
+            if can_resume:
+                trainer.resume()
         summary = trainer.run(export_report=False)
         if summary["tokens_seen"] != cfg.train.token_budget:
             raise ValueError(
