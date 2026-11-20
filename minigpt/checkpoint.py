@@ -12,6 +12,8 @@ from typing import Any
 import numpy as np
 import torch
 
+from minigpt.io import replace_file
+
 
 @contextmanager
 def run_writer(directory: Path) -> Iterator[None]:
@@ -66,7 +68,7 @@ def save_checkpoint(path: Path, state: dict[str, Any]) -> None:
     try:
         with stream:
             torch.save(state, stream)
-        temporary.replace(path)
+        replace_file(temporary, path)
     finally:
         temporary.unlink(missing_ok=True)
 
@@ -79,7 +81,7 @@ def copy_checkpoint(source: Path, destination: Path) -> None:
     try:
         with stream, source.open("rb") as src:
             shutil.copyfileobj(src, stream)
-        temporary.replace(destination)
+        replace_file(temporary, destination)
     finally:
         temporary.unlink(missing_ok=True)
 

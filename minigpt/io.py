@@ -5,6 +5,7 @@ import json
 from decimal import ROUND_DOWN, Decimal
 from pathlib import Path
 from tempfile import NamedTemporaryFile
+from time import sleep
 
 
 def display_metric(value: float, places: int = 4) -> str:
@@ -21,6 +22,18 @@ def file_sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def replace_file(temporary: Path, destination: Path) -> None:
+    """Allow transient Windows sharing errors to clear before publishing the same bytes."""
+    for attempt in range(8):
+        try:
+            temporary.replace(destination)
+            return
+        except PermissionError as exc:
+            if getattr(exc, "winerror", None) not in (5, 32, 33) or attempt == 7:
+                raise
+            sleep(min(0.05 * 2**attempt, 1.0))
+
+
 def write_bytes(path: Path, payload: bytes) -> None:
     """Publish a complete file by renaming a temporary file on the same volume."""
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -29,7 +42,7 @@ def write_bytes(path: Path, payload: bytes) -> None:
     try:
         with stream:
             stream.write(payload)
-        temporary.replace(path)
+        replace_file(temporary, path)
     finally:
         temporary.unlink(missing_ok=True)
 

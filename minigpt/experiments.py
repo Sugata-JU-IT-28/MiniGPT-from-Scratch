@@ -109,9 +109,14 @@ def select_lr(records: list[dict[str, Any]]) -> dict[str, Any]:
                 raise ValueError(f"Missing LR result for {preset} at {lr}")
             scores[preset][lr] = statistics.mean(values)
     common_scores = {lr: statistics.mean(scores[p][lr] for p in PRESETS) for lr in LRS}
+    best, second, *_ = sorted(LRS, key=lambda lr: (common_scores[lr], lr))
+    optima = {p: min(LRS, key=lambda lr: (scores[p][lr], lr)) for p in PRESETS}
     return {
-        "shared_lr": min(LRS, key=lambda lr: (common_scores[lr], lr)),
-        "by_preset": {p: min(LRS, key=lambda lr: (scores[p][lr], lr)) for p in PRESETS},
+        "shared_lr": best,
+        "runner_up": second,
+        "runner_up_gap": common_scores[second] - common_scores[best],
+        "by_preset": optima,
+        "shared_minus_optimum": {p: scores[p][best] - scores[p][optima[p]] for p in PRESETS},
         "endpoint_loss_by_preset": scores,
         "mean_endpoint_loss": common_scores,
         "reason": "Lowest mean endpoint validation loss with equal weight per preset. "

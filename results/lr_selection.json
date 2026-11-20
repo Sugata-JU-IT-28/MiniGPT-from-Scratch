@@ -1,8 +1,14 @@
 {
   "shared_lr": 0.003,
+  "runner_up": 0.006,
+  "runner_up_gap": 0.15722891113290505,
   "by_preset": {
     "baseline": 0.003,
     "modern": 0.003
+  },
+  "shared_minus_optimum": {
+    "baseline": 0.0,
+    "modern": 0.0
   },
   "endpoint_loss_by_preset": {
     "baseline": {

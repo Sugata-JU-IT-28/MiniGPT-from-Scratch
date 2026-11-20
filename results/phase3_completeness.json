@@ -1,0 +1,16 @@
+{
+  "expected": {
+    "lr_sweep": 8,
+    "arch_ablation": 15,
+    "shape_ablation": 21,
+    "scaling": 12,
+    "tokenizer": 6
+  },
+  "missing": {
+    "lr_sweep": [],
+    "arch_ablation": [],
+    "shape_ablation": [],
+    "scaling": [],
+    "tokenizer": []
+  }
+}

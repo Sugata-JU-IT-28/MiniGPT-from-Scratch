@@ -16,7 +16,7 @@ from matplotlib.figure import Figure
 
 from minigpt.data import seed_everything
 from minigpt.experiment_runner import read_json
-from minigpt.experiments import SUITES, Variant, run_config
+from minigpt.experiments import QUICK_TOKENS, SEEDS, SUITES, Variant, run_config
 from minigpt.io import display_metric, write_bytes, write_json
 
 TITLES = {
@@ -73,6 +73,7 @@ def group_runs(records: list[dict[str, Any]]) -> dict[str, Any]:
         "params": first["params"],
         "non_embedding_params": first["non_embedding_params"],
         "endpoints": {**metrics, "gap": gaps},
+        "endpoint_by_seed": {str(r["seed"]): r["final"] for r in records},
         "lowest_validation_step_by_seed": {
             str(r["seed"]): min(r["history"], key=lambda row: row["val_loss"])["step"]
             for r in records
@@ -86,39 +87,54 @@ def contrast(reference: dict[str, Any], variant: dict[str, Any], key: str) -> di
     """Compare an endpoint difference against the larger of the two seed SDs."""
     left, right = (g["endpoints"][key] for g in (reference, variant))
     delta = left["mean"] - right["mean"]
-    spread = (
-        max(left["std"], right["std"]) if None not in (left["std"], right["std"]) else None
-    )
+    spread = max(left["std"], right["std"]) if None not in (left["std"], right["std"]) else None
     verdict = "inconclusive"
     if spread is not None and abs(delta) > spread:
         verdict = "lower" if delta > 0 else "higher"
-    return {"reference": reference["name"], "variant": variant["name"], "metric": key,
-            "reference_minus_variant": delta, "larger_sample_std": spread, "verdict": verdict}
+    return {
+        "reference": reference["name"],
+        "variant": variant["name"],
+        "metric": key,
+        "reference_minus_variant": delta,
+        "larger_sample_std": spread,
+        "verdict": verdict,
+    }
 
 
-def collect(root: Path, first_seed: int) -> dict[str, Any]:
+def collect(root: Path, first_seed: int, *, quick: bool = False) -> dict[str, Any]:
     """Refuse incomplete grids or unmatched configurations before publishing tables."""
-    base = root / "results"
-    plan = read_json(base / "experiment_plan.json")
-    selection = read_json(base / "lr_selection.json")
+    base = root / ("results/quick" if quick else "results")
+    plan = (
+        {"token_budget": QUICK_TOKENS, "seeds": SEEDS}
+        if quick
+        else read_json(base / "experiment_plan.json")
+    )
+    selection = read_json(root / "results/lr_selection.json")
     budget = plan["token_budget"]
-    if selection["token_budget"] != budget:
+    if not quick and selection["token_budget"] != budget:
         raise ValueError("The LR selection and experiment plan have different token budgets")
     suites = {}
     total_seconds = 0.0
     count = 0
+    epochs = {}
     for suite, specs in SUITES.items():
         groups = {}
         for spec in specs:
             records = []
             for seed in range(first_seed, first_seed + plan["seeds"][suite]):
-                cfg = run_config(spec, seed, budget, selection["shared_lr"])
+                cfg = run_config(spec, seed, budget, selection["shared_lr"], quick=quick)
+                if cfg.data_dir not in epochs:
+                    train_tokens = read_json(root / cfg.data_dir / "meta.json")["train_tokens"]
+                    epochs[cfg.data_dir] = {
+                        "train_tokens": train_tokens,
+                        "epochs": budget / train_tokens,
+                    }
                 path = base / "runs" / suite / f"{cfg.name}.json"
                 record = read_json(path)
                 with path.with_suffix(".csv").open(encoding="utf-8", newline="") as stream:
                     csv_rows = list(csv.DictReader(stream))
                 if (
-                    record["mode"] != "full"
+                    record["mode"] != ("quick" if quick else "full")
                     or record["tokens_seen"] != budget
                     or record["final"]["tokens_seen"] != budget
                     or record["step"] != cfg.steps
@@ -142,11 +158,13 @@ def collect(root: Path, first_seed: int) -> dict[str, Any]:
     for suite, key in (("scaling", "val_loss"), ("tokenizer", "val_bpb")):
         groups_in_order = list(suites[suite].values())
         comparisons[suite] = [
-            contrast(a, b, key) for a, b in zip(groups_in_order[:-1], groups_in_order[1:], strict=True)
+            contrast(a, b, key)
+            for a, b in zip(groups_in_order[:-1], groups_in_order[1:], strict=True)
         ]
     return {
         "seed": first_seed,
         "run_count": count,
+        "train_split_equivalents": epochs,
         "token_budget": budget,
         "lr_selection": selection,
         "seeds": plan["seeds"],
@@ -371,13 +389,21 @@ def main(argv: Sequence[str] | None = None) -> None:
     """Write tables and figures from the full published experiment matrix."""
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--seed", type=int, default=0, help="First seed in each planned suite")
+    p.add_argument("--quick", action="store_true", help="Read and publish only in results/quick")
     args = p.parse_args(argv)
     seed_everything(args.seed)
     root = Path(".")
-    summary = collect(root, args.seed)
-    write_json(root / "results/experiment_aggregate.json", summary)
-    write_bytes(root / "docs/results_tables.md", tables(summary).encode("utf-8"))
-    figures(summary, root / "docs/img")
+    summary = collect(root, args.seed, quick=args.quick)
+    base = root / ("results/quick" if args.quick else "results")
+    docs = base / "report" if args.quick else root / "docs"
+    write_json(base / "experiment_aggregate.json", summary)
+    page = tables(summary)
+    if args.quick:
+        page = page.replace("../results/experiment_aggregate.json", "../experiment_aggregate.json")
+        page = page.replace("[Interpretation](analysis.md)", "Quick pipeline validation")
+        page = page.replace("# TinyShakespeare", "# Quick TinyShakespeare")
+    write_bytes(docs / "results_tables.md", page.encode("utf-8"))
+    figures(summary, docs / "img")
     print(f"Aggregated {summary['run_count']} runs.", flush=True)
 
 

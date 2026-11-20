@@ -10,6 +10,7 @@ from typing import Any
 import pytest
 
 from minigpt import experiment_timing as timing
+from minigpt.checkpoint import run_writer
 from minigpt.config import RunConfig
 from minigpt.data import prepare_dataset
 from minigpt.experiment_runner import check_dir, execute, read_json, run_one
@@ -18,6 +19,7 @@ from minigpt.io import file_sha256, write_json
 from minigpt.metrics import write_metrics
 from minigpt.train import Trainer
 from scripts import aggregate_results as report
+from scripts import phase3_jobs
 from scripts import run_experiments as runner
 from scripts import train_final as final
 
@@ -46,6 +48,28 @@ def test_declarative_grids_are_matched() -> None:
         run_config(SUITES["arch_ablation"][0], 0, 1234, 0.001)
 
 
+def test_temporary_windows_access_denial_during_atomic_publish(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    path = tmp_path / "metrics.json"
+    write_json(path, {"step": 25})
+    original = Path.replace
+    calls = []
+
+    def temporarily_locked(src: Path, destination: Path) -> Path:
+        calls.append(src)
+        if len(calls) == 1:
+            assert read_json(destination) == {"step": 25}
+            error = PermissionError("temporary Windows denial")
+            error.winerror = 5
+            raise error
+        return original(src, destination)
+
+    monkeypatch.setattr(Path, "replace", temporarily_locked)
+    write_json(path, {"step": 50})
+    assert calls[0] == calls[1] and read_json(path) == {"step": 50}
+
+
 def test_lr_decision_handles_different_winners() -> None:
     records = []
     for spec in SUITES["lr_sweep"]:
@@ -60,6 +84,9 @@ def test_lr_decision_handles_different_winners() -> None:
     decision = select_lr(records)
     assert decision["by_preset"] == {"baseline": 0.001, "modern": 0.003}
     assert decision["shared_lr"] == 0.001
+    assert decision["runner_up_gap"] > 0
+    assert decision["shared_minus_optimum"]["baseline"] == 0
+    assert decision["shared_minus_optimum"]["modern"] > 0
     with pytest.raises(ValueError, match="Missing LR"):
         select_lr(records[1:])
 
@@ -93,7 +120,25 @@ def test_run_resume_skip_repair_and_promote(tmp_path: Path, small_fit: RunConfig
     assert published["validation"]["loss"] == pytest.approx(result["best_val"], abs=1e-6)
     assert file_sha256(tmp_path / "checkpoints/final.pt") == published["checkpoint_sha256"]
     assert len(published["samples"]) == 3 and all(s["ids"] for s in published["samples"])
+    assert len(published["greedy_ids"]) == 256 and published["greedy_cached_equals_uncached"]
+    assert len({g["prompt"] for g in published["sample_sets"]}) == 3
+    assert all(len(g["samples"]) == 3 for g in published["sample_sets"])
     assert (tmp_path / "docs/samples_final.md").is_file()
+
+
+def test_same_named_quick_and_full_results_and_locks(tmp_path: Path, small_fit: RunConfig) -> None:
+    full = check_dir(tmp_path, "arch_ablation", small_fit, False)
+    quick = check_dir(tmp_path, "arch_ablation", small_fit, True)
+    with run_writer(full):
+        with pytest.raises(RuntimeError, match="writer lock"):
+            run_one(tmp_path, "arch_ablation", "small", small_fit)
+        fast = run_one(tmp_path, "arch_ablation", "small", small_fit, quick=True)
+    with run_writer(quick):
+        official = run_one(tmp_path, "arch_ablation", "small", small_fit)
+    for base, record in (("results", official), ("results/quick", fast)):
+        path = tmp_path / base / "runs/arch_ablation/small_s0.json"
+        assert read_json(path) == record and path.with_suffix(".csv").is_file()
+    assert official["mode"] == "full" and fast["mode"] == "quick"
 
 
 def test_real_probe_and_persisted_plan(
@@ -114,6 +159,37 @@ def test_real_probe_and_persisted_plan(
     assert plan["final_token_budget"] == 4 * plan["token_budget"]
     monkeypatch.setattr(timing, "probe", lambda *a: pytest.fail("probe repeated"))
     assert timing.make_plan(0) == plan
+
+
+def test_supervisor_detects_missing_seeds(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.chdir(tmp_path)
+    plan = {"seeds": SEEDS}
+    path = Path("results/runs/arch_ablation/modern_s0.json")
+    write_json(path, {})
+    missing = phase3_jobs.completeness(0, plan, False)
+    assert len(missing["arch_ablation"]) == 14 and path.name not in missing["arch_ablation"]
+    assert path.name in phase3_jobs.completeness(0, plan, True)["arch_ablation"]
+
+
+def test_final_plan_falls_back_and_checks_both_lrs(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, small_fit: RunConfig
+) -> None:
+    def fake_probe(spec: Any, seed: int) -> dict[str, float]:
+        return {
+            "step_seconds": 2 if spec.model.n_embd == 256 else 0.1,
+            "split_targets": 100,
+            "eval_batch_tokens": 32,
+            "eval_batch_seconds": 0.01,
+        }
+
+    write_json(tmp_path / "results/experiment_timing.json", {"timings": {}})
+    monkeypatch.setattr(final, "probe", fake_probe)
+    selected, plan = final.plan_final(tmp_path, timing.FINAL_CPU, 3145728, 0)
+    assert selected.model.n_embd == 176 and plan["estimated_seconds"] < 6000
+    spec = variant("final", "modern", **asdict(small_fit.model))
+    check = final.transfer(tmp_path, spec, 20480, 0, 0.002)
+    assert [r["lr"] for r in check["probes"]] == [0.002, 0.001]
+    assert check["selected_lr"] == min(check["probes"], key=lambda r: r["val_loss"])["lr"]
 
 
 def test_quick_cli_and_missing_sweep(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
@@ -153,6 +229,7 @@ def test_aggregation_tables_figures_and_final_selection(
         for index, spec in enumerate(specs):
             for seed in range(SEEDS[suite]):
                 cfg = run_config(spec, seed, budget, 0.003)
+                write_json(Path(cfg.data_dir) / "meta.json", {"train_tokens": budget * 2})
                 val = 4 + seed * 0.02 - index * 0.01
                 row = {
                     "step": cfg.steps,
@@ -186,6 +263,7 @@ def test_aggregation_tables_figures_and_final_selection(
     report.main(["--seed", "0"])
     summary = read_json(Path("results/experiment_aggregate.json"))
     assert summary["run_count"] == 62
+    assert summary["train_split_equivalents"]["data/vocab_1024"]["epochs"] == 0.5
     comparisons = summary["comparisons"]["arch_ablation"]
     assert comparisons[0]["verdict"] == "inconclusive"
     assert comparisons[-1]["verdict"] == "lower"

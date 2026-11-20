@@ -1,0 +1,94 @@
+{
+  "token_budget": 3145728,
+  "estimated_seconds": 2956.1007923940792,
+  "candidates": [
+    {
+      "model": {
+        "vocab_size": 1024,
+        "block_size": 128,
+        "n_layer": 6,
+        "n_head": 4,
+        "n_embd": 256,
+        "dropout": 0.1,
+        "bias": true,
+        "tie_weights": true,
+        "use_sdpa": false,
+        "norm_type": "rmsnorm",
+        "pos_encoding": "rope",
+        "mlp_type": "swiglu"
+      },
+      "timing": {
+        "model": {
+          "vocab_size": 1024,
+          "block_size": 128,
+          "n_layer": 6,
+          "n_head": 4,
+          "n_embd": 256,
+          "dropout": 0.1,
+          "bias": true,
+          "tie_weights": true,
+          "use_sdpa": false,
+          "norm_type": "rmsnorm",
+          "pos_encoding": "rope",
+          "mlp_type": "swiglu"
+        },
+        "params": 5024576,
+        "non_embedding_params": 4762432,
+        "step_seconds": 0.3292414000025019,
+        "step_trials": [
+          0.564083400000527,
+          0.5388152000014088,
+          0.35578480000185664,
+          0.29367760000241105,
+          0.2980929000004835,
+          0.30269800000314717,
+          0.28963110000040615,
+          0.36147279999931925
+        ],
+        "eval_batch_seconds": 0.30144334999931743,
+        "eval_batch_trials": [
+          0.3844974999992701,
+          0.25937700000213226,
+          0.25610230000165757,
+          0.2815197999989323,
+          0.3213668999997026,
+          1.3352943999998388,
+          0.538122599999042,
+          0.250360100002581
+        ],
+        "eval_batch_tokens": 2048,
+        "split_targets": 460661
+      },
+      "estimated_seconds": 2956.1007923940792
+    }
+  ],
+  "seed": 0,
+  "selected_model": {
+    "vocab_size": 1024,
+    "block_size": 128,
+    "n_layer": 6,
+    "n_head": 4,
+    "n_embd": 256,
+    "dropout": 0.1,
+    "bias": true,
+    "tie_weights": true,
+    "use_sdpa": false,
+    "norm_type": "rmsnorm",
+    "pos_encoding": "rope",
+    "mlp_type": "swiglu"
+  },
+  "requested_model": {
+    "vocab_size": 1024,
+    "block_size": 128,
+    "n_layer": 6,
+    "n_head": 4,
+    "n_embd": 256,
+    "dropout": 0.1,
+    "bias": true,
+    "tie_weights": true,
+    "use_sdpa": false,
+    "norm_type": "rmsnorm",
+    "pos_encoding": "rope",
+    "mlp_type": "swiglu"
+  }
+}

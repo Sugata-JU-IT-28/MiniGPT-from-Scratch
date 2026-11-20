@@ -1,0 +1,38 @@
+{
+  "shared_lr": 0.003,
+  "runner_up": 0.006,
+  "runner_up_gap": 0.046014915625350206,
+  "by_preset": {
+    "baseline": 0.006,
+    "modern": 0.003
+  },
+  "shared_minus_optimum": {
+    "baseline": 0.021161059960738804,
+    "modern": 0.0
+  },
+  "endpoint_loss_by_preset": {
+    "baseline": {
+      "0.0003": 6.278841934289027,
+      "0.001": 5.74100413435361,
+      "0.003": 5.621988329417405,
+      "0.006": 5.6008272694566665
+    },
+    "modern": {
+      "0.0003": 6.317896788565646,
+      "0.001": 5.756359672092808,
+      "0.003": 5.562335097232441,
+      "0.006": 5.675525988443881
+    }
+  },
+  "mean_endpoint_loss": {
+    "0.0003": 6.298369361427337,
+    "0.001": 5.7486819032232095,
+    "0.003": 5.5921617133249235,
+    "0.006": 5.638176628950274
+  },
+  "reason": "Lowest mean endpoint validation loss with equal weight per preset. One common LR keeps later architecture comparisons controlled.",
+  "seeds": [
+    0
+  ],
+  "token_budget": 25600
+}

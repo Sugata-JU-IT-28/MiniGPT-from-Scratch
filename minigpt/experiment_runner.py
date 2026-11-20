@@ -95,9 +95,9 @@ def execute(
             raise ValueError(f"No variant named {only!r} in {suite}")
         if suite == "lr_sweep":
             lr = 0.001  # Each sweep variant supplies its own rate.
-        elif selection_path.is_file():
-            selection = read_json(selection_path)
-            if selection["token_budget"] != budget:
+        elif (root / "results/lr_selection.json").is_file():
+            selection = read_json(root / "results/lr_selection.json")
+            if not quick and selection["token_budget"] != budget:
                 raise ValueError("The saved LR sweep used a different token budget")
             lr = selection["shared_lr"]
         elif quick:
