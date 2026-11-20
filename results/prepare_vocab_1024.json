@@ -1,0 +1,11 @@
+{
+  "seed": 42,
+  "corpus_sha256": "86c4e6aa9db7c042ec79f339dcb96d42b0075e16b8fc2e86bf0ca57e2dc565ed",
+  "vocab_size": 1024,
+  "dtype": "<u2",
+  "train_tokens": 411252,
+  "val_tokens": 49411,
+  "train_bytes": 1003854,
+  "val_bytes": 111540,
+  "bytes_per_token": 2.257392078686932
+}

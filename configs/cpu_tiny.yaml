@@ -1,0 +1,29 @@
+seed: 42
+data_dir: data/vocab_1024
+model:
+  preset: baseline
+  vocab_size: 1024
+  block_size: 128
+  n_layer: 4
+  n_head: 6
+  n_embd: 192
+  dropout: 0.1
+  bias: true
+  tie_weights: true
+  use_sdpa: false
+train:
+  token_budget: 3145728
+  batch_size: 8
+  grad_accum: 1
+  lr: 0.0009
+  min_lr: 0.00009
+  warmup_steps: 100
+  weight_decay: 0.1
+  grad_clip: 1.0
+  eval_interval: 512
+  checkpoint_interval: 128
+  eval_batch_size: 16
+  log_interval: 64
+  cpu_threads: 2
+  device: auto
+  compile: false

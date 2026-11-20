@@ -1,0 +1,228 @@
+{
+  "date": "2026-11-19",
+  "training_seed": 42,
+  "tokens_per_run": 3145728,
+  "sanity_baselines": {
+    "uniform_loss": 6.931471805599453,
+    "unigram_loss": 5.70856513273361,
+    "unigram_all_val_ids_loss": 5.708555731044547,
+    "unseen_val_targets": 0,
+    "train_tokens": 411252,
+    "val_tokens": 49411,
+    "val_targets": 49410
+  },
+  "runs": [
+    {
+      "name": "cpu_tiny_baseline",
+      "preset": "baseline",
+      "config": {
+        "name": "cpu_tiny_baseline",
+        "preset": "baseline",
+        "seed": 42,
+        "data_dir": "data/vocab_1024",
+        "model": {
+          "vocab_size": 1024,
+          "block_size": 128,
+          "n_layer": 4,
+          "n_head": 6,
+          "n_embd": 192,
+          "dropout": 0.1,
+          "bias": true,
+          "tie_weights": true,
+          "use_sdpa": false,
+          "norm_type": "layernorm",
+          "pos_encoding": "learned",
+          "mlp_type": "gelu"
+        },
+        "train": {
+          "token_budget": 3145728,
+          "batch_size": 8,
+          "lr": 0.0009,
+          "min_lr": 9e-05,
+          "warmup_steps": 100,
+          "eval_interval": 512,
+          "checkpoint_interval": 128,
+          "grad_accum": 1,
+          "weight_decay": 0.1,
+          "grad_clip": 1.0,
+          "eval_batch_size": 16,
+          "log_interval": 64,
+          "device": "auto",
+          "cpu_threads": 2,
+          "compile": false
+        }
+      },
+      "data_sha256": {
+        "meta.json": "1e44d208ce19a4deb3e17beb98cbcd8b90786a53a0d49fe8a9cb321b3de30b65",
+        "tokenizer.json": "4544533e8455760997f9877aaff400e868883bb0d1c3c2e12dacee6f3f25da42",
+        "train.bin": "c059e99da61eb2c0face63ecb750fe9cb0f2c5871d8e7f277829dc7096cafb2f",
+        "val.bin": "069cdae7cce8a4ce2e2f5415730768c8c7e9a73762516702793a48a209c5bf81"
+      },
+      "runtime": {
+        "device": "cpu",
+        "torch": "2.15.0+cpu",
+        "amp": "None",
+        "cpu_threads": 2
+      },
+      "params": 2001024,
+      "tokens_seen": 3145728,
+      "elapsed": 1268.9566681000006,
+      "best": {
+        "step": 3072,
+        "tokens_seen": 3145728,
+        "train_loss": 3.2700512601683824,
+        "val_loss": 3.5770869615902616,
+        "val_ppl": 35.76919190471077,
+        "val_bpb": 2.286109563792152,
+        "lr": 9e-05,
+        "tokens_per_sec": 3012.351076943297,
+        "elapsed": 1268.8848105999996
+      },
+      "final": {
+        "step": 3072,
+        "tokens_seen": 3145728,
+        "train_loss": 3.2700512601683824,
+        "val_loss": 3.5770869615902616,
+        "val_ppl": 35.76919190471077,
+        "val_bpb": 2.286109563792152,
+        "lr": 9e-05,
+        "tokens_per_sec": 3012.351076943297,
+        "elapsed": 1268.8848105999996
+      },
+      "best_gap": 0.3070357014218792,
+      "final_gap": 0.3070357014218792,
+      "rechecked_val": {
+        "loss": 3.5770869615902616,
+        "ppl": 35.76919190471077,
+        "bpb": 2.286109563792152,
+        "tokens": 49410
+      },
+      "falling_train_rising_val_intervals": [],
+      "best_checkpoint": "checkpoints/cpu_tiny_baseline/best.pt"
+    },
+    {
+      "name": "cpu_tiny_modern",
+      "preset": "modern",
+      "config": {
+        "name": "cpu_tiny_modern",
+        "preset": "modern",
+        "seed": 42,
+        "data_dir": "data/vocab_1024",
+        "model": {
+          "vocab_size": 1024,
+          "block_size": 128,
+          "n_layer": 4,
+          "n_head": 6,
+          "n_embd": 192,
+          "dropout": 0.1,
+          "bias": true,
+          "tie_weights": true,
+          "use_sdpa": false,
+          "norm_type": "rmsnorm",
+          "pos_encoding": "rope",
+          "mlp_type": "swiglu"
+        },
+        "train": {
+          "token_budget": 3145728,
+          "batch_size": 8,
+          "lr": 0.0009,
+          "min_lr": 9e-05,
+          "warmup_steps": 100,
+          "eval_interval": 512,
+          "checkpoint_interval": 128,
+          "grad_accum": 1,
+          "weight_decay": 0.1,
+          "grad_clip": 1.0,
+          "eval_batch_size": 16,
+          "log_interval": 64,
+          "device": "auto",
+          "cpu_threads": 2,
+          "compile": false
+        }
+      },
+      "data_sha256": {
+        "meta.json": "1e44d208ce19a4deb3e17beb98cbcd8b90786a53a0d49fe8a9cb321b3de30b65",
+        "tokenizer.json": "4544533e8455760997f9877aaff400e868883bb0d1c3c2e12dacee6f3f25da42",
+        "train.bin": "c059e99da61eb2c0face63ecb750fe9cb0f2c5871d8e7f277829dc7096cafb2f",
+        "val.bin": "069cdae7cce8a4ce2e2f5415730768c8c7e9a73762516702793a48a209c5bf81"
+      },
+      "runtime": {
+        "device": "cpu",
+        "torch": "2.15.0+cpu",
+        "amp": "None",
+        "cpu_threads": 2
+      },
+      "params": 1975744,
+      "tokens_seen": 3145728,
+      "elapsed": 1337.549014099999,
+      "best": {
+        "step": 3072,
+        "tokens_seen": 3145728,
+        "train_loss": 2.801999647033641,
+        "val_loss": 3.3270130419774566,
+        "val_ppl": 27.855015557152146,
+        "val_bpb": 2.126287791098187,
+        "lr": 9e-05,
+        "tokens_per_sec": 2887.210673495319,
+        "elapsed": 1337.3842067000005
+      },
+      "final": {
+        "step": 3072,
+        "tokens_seen": 3145728,
+        "train_loss": 2.801999647033641,
+        "val_loss": 3.3270130419774566,
+        "val_ppl": 27.855015557152146,
+        "val_bpb": 2.126287791098187,
+        "lr": 9e-05,
+        "tokens_per_sec": 2887.210673495319,
+        "elapsed": 1337.3842067000005
+      },
+      "best_gap": 0.5250133949438158,
+      "final_gap": 0.5250133949438158,
+      "rechecked_val": {
+        "loss": 3.3270130419774566,
+        "ppl": 27.855015557152146,
+        "bpb": 2.126287791098187,
+        "tokens": 49410
+      },
+      "falling_train_rising_val_intervals": [],
+      "best_checkpoint": "checkpoints/cpu_tiny_modern/best.pt"
+    }
+  ],
+  "parameter_counts": {
+    "cpu_tiny": {
+      "baseline": {
+        "total": 2001024,
+        "non_embedding": 1779840
+      },
+      "modern": {
+        "total": 1975744,
+        "non_embedding": 1779136
+      }
+    },
+    "gpu_small": {
+      "baseline": {
+        "total": 18236928,
+        "non_embedding": 17745408
+      },
+      "modern": {
+        "total": 18135680,
+        "non_embedding": 17742464
+      }
+    }
+  },
+  "selected": {
+    "preset": "modern",
+    "step": 3072,
+    "val_loss": 3.3270130419774566,
+    "reason": "Lowest full validation loss",
+    "source": "checkpoints/cpu_tiny_modern/best.pt",
+    "path": "checkpoints/best.pt",
+    "sha256": "5b7affb5d64d5ba64e154c1b52664962e25eaaecc8cdc8f1f4f7b3f21a48c6c0"
+  },
+  "best_loss_difference": 0.250073919612805,
+  "commands": {
+    "baseline": "python scripts/train.py --config configs/cpu_tiny.yaml --preset baseline --seed 42",
+    "modern": "python scripts/train.py --config configs/cpu_tiny.yaml --preset modern --seed 42"
+  }
+}

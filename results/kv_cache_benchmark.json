@@ -1,0 +1,650 @@
+{
+  "seed": 42,
+  "repeats": 3,
+  "batches": [
+    1,
+    8
+  ],
+  "lengths": [
+    32,
+    64,
+    128,
+    256,
+    512
+  ],
+  "capacity": 1024,
+  "prompt_tokens": 8,
+  "device": "cpu",
+  "torch": "2.15.0+cpu",
+  "processor": "Intel64 Family 6 Model 142 Stepping 12, GenuineIntel",
+  "threads": 2,
+  "checkpoint_sha256": "5b7affb5d64d5ba64e154c1b52664962e25eaaecc8cdc8f1f4f7b3f21a48c6c0",
+  "rows": [
+    {
+      "batch": 1,
+      "length": 32,
+      "cached_positions": 39,
+      "uncached_seconds": 0.10498640000150772,
+      "cached_seconds": 0.06684780000068713,
+      "uncached_tokens_per_sec": 304.8013837939052,
+      "cached_tokens_per_sec": 478.6993737964611,
+      "speedup": 1.570528873058329,
+      "cache_bytes": 239616,
+      "formula_bytes": 239616,
+      "element_bytes": 4,
+      "difference_bytes": 0,
+      "uncached_trials_seconds": [
+        0.10775909999938449,
+        0.10498640000150772,
+        0.10146379999787314
+      ],
+      "cached_trials_seconds": [
+        0.06684780000068713,
+        0.06738820000100532,
+        0.06588920000285725
+      ],
+      "preset": "baseline"
+    },
+    {
+      "batch": 1,
+      "length": 64,
+      "cached_positions": 71,
+      "uncached_seconds": 0.24697979999837116,
+      "cached_seconds": 0.14051850000032573,
+      "uncached_tokens_per_sec": 259.13050379189747,
+      "cached_tokens_per_sec": 455.4560431534043,
+      "speedup": 1.7576319132199578,
+      "cache_bytes": 436224,
+      "formula_bytes": 436224,
+      "element_bytes": 4,
+      "difference_bytes": 0,
+      "uncached_trials_seconds": [
+        0.27452640000046813,
+        0.24697979999837116,
+        0.2442521000011766
+      ],
+      "cached_trials_seconds": [
+        0.14051850000032573,
+        0.13344599999982165,
+        0.14430050000009942
+      ],
+      "preset": "baseline"
+    },
+    {
+      "batch": 1,
+      "length": 128,
+      "cached_positions": 135,
+      "uncached_seconds": 0.6797286000000895,
+      "cached_seconds": 0.274956099998235,
+      "uncached_tokens_per_sec": 188.31045214219785,
+      "cached_tokens_per_sec": 465.5288607920379,
+      "speedup": 2.4721350062953786,
+      "cache_bytes": 829440,
+      "formula_bytes": 829440,
+      "element_bytes": 4,
+      "difference_bytes": 0,
+      "uncached_trials_seconds": [
+        0.6797286000000895,
+        0.6735090000001946,
+        1.2044352999982948
+      ],
+      "cached_trials_seconds": [
+        0.274956099998235,
+        0.27012660000036703,
+        0.5694920000023558
+      ],
+      "preset": "baseline"
+    },
+    {
+      "batch": 1,
+      "length": 256,
+      "cached_positions": 263,
+      "uncached_seconds": 2.557918599999539,
+      "cached_seconds": 0.6939291000016965,
+      "uncached_tokens_per_sec": 100.08137084582995,
+      "cached_tokens_per_sec": 368.91376943173896,
+      "speedup": 3.6861382524429156,
+      "cache_bytes": 1615872,
+      "formula_bytes": 1615872,
+      "element_bytes": 4,
+      "difference_bytes": 0,
+      "uncached_trials_seconds": [
+        2.2478248000006715,
+        3.12621930000023,
+        2.557918599999539
+      ],
+      "cached_trials_seconds": [
+        0.6048393999990367,
+        0.6939291000016965,
+        0.6978129000017361
+      ],
+      "preset": "baseline"
+    },
+    {
+      "batch": 1,
+      "length": 512,
+      "cached_positions": 519,
+      "uncached_seconds": 12.77053259999957,
+      "cached_seconds": 1.4977475000014238,
+      "uncached_tokens_per_sec": 40.092298108225904,
+      "cached_tokens_per_sec": 341.84667308709464,
+      "speedup": 8.526492349336205,
+      "cache_bytes": 3188736,
+      "formula_bytes": 3188736,
+      "element_bytes": 4,
+      "difference_bytes": 0,
+      "uncached_trials_seconds": [
+        13.539907799997309,
+        12.77053259999957,
+        12.362182699998812
+      ],
+      "cached_trials_seconds": [
+        1.4977475000014238,
+        1.3355964000002132,
+        2.0160521999969205
+      ],
+      "preset": "baseline"
+    },
+    {
+      "batch": 8,
+      "length": 32,
+      "cached_positions": 39,
+      "uncached_seconds": 0.28398749999905704,
+      "cached_seconds": 0.09914189999835799,
+      "uncached_tokens_per_sec": 901.4481271212643,
+      "cached_tokens_per_sec": 2582.1574934940722,
+      "speedup": 2.864454887426613,
+      "cache_bytes": 1916928,
+      "formula_bytes": 1916928,
+      "element_bytes": 4,
+      "difference_bytes": 0,
+      "uncached_trials_seconds": [
+        0.28398749999905704,
+        0.2836595999979181,
+        0.32590759999948204
+      ],
+      "cached_trials_seconds": [
+        0.0967216000026383,
+        0.09914189999835799,
+        0.18793389999700594
+      ],
+      "preset": "baseline"
+    },
+    {
+      "batch": 8,
+      "length": 64,
+      "cached_positions": 71,
+      "uncached_seconds": 1.2029140000013285,
+      "cached_seconds": 0.1994397000016761,
+      "uncached_tokens_per_sec": 425.63308765168125,
+      "cached_tokens_per_sec": 2567.191988333803,
+      "speedup": 6.031467155191365,
+      "cache_bytes": 3489792,
+      "formula_bytes": 3489792,
+      "element_bytes": 4,
+      "difference_bytes": 0,
+      "uncached_trials_seconds": [
+        1.486901600001147,
+        0.8765394000001834,
+        1.2029140000013285
+      ],
+      "cached_trials_seconds": [
+        0.19537929999933112,
+        0.1994397000016761,
+        0.35915400000158115
+      ],
+      "preset": "baseline"
+    },
+    {
+      "batch": 8,
+      "length": 128,
+      "cached_positions": 135,
+      "uncached_seconds": 4.4535079000015685,
+      "cached_seconds": 0.6563346000002639,
+      "uncached_tokens_per_sec": 229.93110666754163,
+      "cached_tokens_per_sec": 1560.1798229128683,
+      "speedup": 6.7854230144194405,
+      "cache_bytes": 6635520,
+      "formula_bytes": 6635520,
+      "element_bytes": 4,
+      "difference_bytes": 0,
+      "uncached_trials_seconds": [
+        4.252608099999634,
+        4.4535079000015685,
+        4.567360500001087
+      ],
+      "cached_trials_seconds": [
+        0.6563346000002639,
+        0.862886899998557,
+        0.5861469000010402
+      ],
+      "preset": "baseline"
+    },
+    {
+      "batch": 8,
+      "length": 256,
+      "cached_positions": 263,
+      "uncached_seconds": 18.878655500000605,
+      "cached_seconds": 1.303992199998902,
+      "uncached_tokens_per_sec": 108.48230161305366,
+      "cached_tokens_per_sec": 1570.561541703796,
+      "speedup": 14.477583148132712,
+      "cache_bytes": 12926976,
+      "formula_bytes": 12926976,
+      "element_bytes": 4,
+      "difference_bytes": 0,
+      "uncached_trials_seconds": [
+        18.86839229999896,
+        18.878655500000605,
+        20.40132430000085
+      ],
+      "cached_trials_seconds": [
+        1.6384992999992392,
+        1.303992199998902,
+        1.067869000002247
+      ],
+      "preset": "baseline"
+    },
+    {
+      "batch": 8,
+      "length": 512,
+      "cached_positions": 519,
+      "uncached_seconds": 102.08404650000011,
+      "cached_seconds": 3.2407735000015236,
+      "uncached_tokens_per_sec": 40.123801322863855,
+      "cached_tokens_per_sec": 1263.8957952470528,
+      "speedup": 31.49990164383661,
+      "cache_bytes": 25509888,
+      "formula_bytes": 25509888,
+      "element_bytes": 4,
+      "difference_bytes": 0,
+      "uncached_trials_seconds": [
+        101.7088537999989,
+        102.08404650000011,
+        105.45952719999696
+      ],
+      "cached_trials_seconds": [
+        3.4290870999975596,
+        3.2407735000015236,
+        2.9745992999996815
+      ],
+      "preset": "baseline"
+    },
+    {
+      "batch": 1,
+      "length": 32,
+      "cached_positions": 39,
+      "uncached_seconds": 0.15448079999987385,
+      "cached_seconds": 0.10765959999844199,
+      "uncached_tokens_per_sec": 207.14548345183434,
+      "cached_tokens_per_sec": 297.2331310952585,
+      "speedup": 1.4349003711894661,
+      "cache_bytes": 239616,
+      "formula_bytes": 239616,
+      "element_bytes": 4,
+      "difference_bytes": 0,
+      "uncached_trials_seconds": [
+        0.15448079999987385,
+        0.15152630000011413,
+        0.16491790000145556
+      ],
+      "cached_trials_seconds": [
+        0.10698979999870062,
+        0.10765959999844199,
+        0.21807430000262684
+      ],
+      "preset": "modern"
+    },
+    {
+      "batch": 1,
+      "length": 64,
+      "cached_positions": 71,
+      "uncached_seconds": 0.38711010000042734,
+      "cached_seconds": 0.23447070000111125,
+      "uncached_tokens_per_sec": 165.3276419290774,
+      "cached_tokens_per_sec": 272.9552135925584,
+      "speedup": 1.6509956254602074,
+      "cache_bytes": 436224,
+      "formula_bytes": 436224,
+      "element_bytes": 4,
+      "difference_bytes": 0,
+      "uncached_trials_seconds": [
+        0.7259774999984074,
+        0.38711010000042734,
+        0.3663016999998945
+      ],
+      "cached_trials_seconds": [
+        0.42677520000142977,
+        0.22162290000051144,
+        0.23447070000111125
+      ],
+      "preset": "modern"
+    },
+    {
+      "batch": 1,
+      "length": 128,
+      "cached_positions": 135,
+      "uncached_seconds": 1.3480396999984805,
+      "cached_seconds": 0.4456742000002123,
+      "uncached_tokens_per_sec": 94.95269315892126,
+      "cached_tokens_per_sec": 287.2053172473054,
+      "speedup": 3.024720075781453,
+      "cache_bytes": 829440,
+      "formula_bytes": 829440,
+      "element_bytes": 4,
+      "difference_bytes": 0,
+      "uncached_trials_seconds": [
+        1.7670800000014424,
+        1.3480396999984805,
+        1.2512265000004845
+      ],
+      "cached_trials_seconds": [
+        0.49848430000201915,
+        0.4456742000002123,
+        0.41242889999921317
+      ],
+      "preset": "modern"
+    },
+    {
+      "batch": 1,
+      "length": 256,
+      "cached_positions": 263,
+      "uncached_seconds": 3.8978438999984064,
+      "cached_seconds": 1.3469962999988638,
+      "uncached_tokens_per_sec": 65.67733510315912,
+      "cached_tokens_per_sec": 190.05248937967826,
+      "speedup": 2.893730220344105,
+      "cache_bytes": 1615872,
+      "formula_bytes": 1615872,
+      "element_bytes": 4,
+      "difference_bytes": 0,
+      "uncached_trials_seconds": [
+        4.3512141999999585,
+        3.8978438999984064,
+        3.31276330000037
+      ],
+      "cached_trials_seconds": [
+        1.3469962999988638,
+        0.9613051999986055,
+        1.4833935999995447
+      ],
+      "preset": "modern"
+    },
+    {
+      "batch": 1,
+      "length": 512,
+      "cached_positions": 519,
+      "uncached_seconds": 14.696171699997649,
+      "cached_seconds": 2.4564218999985314,
+      "uncached_tokens_per_sec": 34.83900504510858,
+      "cached_tokens_per_sec": 208.43325000493851,
+      "speedup": 5.98275552746311,
+      "cache_bytes": 3188736,
+      "formula_bytes": 3188736,
+      "element_bytes": 4,
+      "difference_bytes": 0,
+      "uncached_trials_seconds": [
+        14.696171699997649,
+        14.683555999999953,
+        15.155749400000786
+      ],
+      "cached_trials_seconds": [
+        2.3517338999990898,
+        2.6787818999982846,
+        2.4564218999985314
+      ],
+      "preset": "modern"
+    },
+    {
+      "batch": 8,
+      "length": 32,
+      "cached_positions": 39,
+      "uncached_seconds": 0.39188690000082715,
+      "cached_seconds": 0.13866050000069663,
+      "uncached_tokens_per_sec": 653.2497003585975,
+      "cached_tokens_per_sec": 1846.235950387557,
+      "speedup": 2.826233137763518,
+      "cache_bytes": 1916928,
+      "formula_bytes": 1916928,
+      "element_bytes": 4,
+      "difference_bytes": 0,
+      "uncached_trials_seconds": [
+        0.43174459999863757,
+        0.3915463999983331,
+        0.39188690000082715
+      ],
+      "cached_trials_seconds": [
+        0.15458420000140904,
+        0.13243039999724715,
+        0.13866050000069663
+      ],
+      "preset": "modern"
+    },
+    {
+      "batch": 8,
+      "length": 64,
+      "cached_positions": 71,
+      "uncached_seconds": 1.7602140000017243,
+      "cached_seconds": 0.28536089999761316,
+      "uncached_tokens_per_sec": 290.8737233083582,
+      "cached_tokens_per_sec": 1794.2191800077815,
+      "speedup": 6.168378358830685,
+      "cache_bytes": 3489792,
+      "formula_bytes": 3489792,
+      "element_bytes": 4,
+      "difference_bytes": 0,
+      "uncached_trials_seconds": [
+        1.9534522000030847,
+        1.7602140000017243,
+        1.1731743999989703
+      ],
+      "cached_trials_seconds": [
+        0.28536089999761316,
+        0.28403419999813195,
+        0.2999615000007907
+      ],
+      "preset": "modern"
+    },
+    {
+      "batch": 8,
+      "length": 128,
+      "cached_positions": 135,
+      "uncached_seconds": 5.3598735999985365,
+      "cached_seconds": 0.6192139999984647,
+      "uncached_tokens_per_sec": 191.04928146071944,
+      "cached_tokens_per_sec": 1653.7093799599797,
+      "speedup": 8.655930905974067,
+      "cache_bytes": 6635520,
+      "formula_bytes": 6635520,
+      "element_bytes": 4,
+      "difference_bytes": 0,
+      "uncached_trials_seconds": [
+        5.496430300001521,
+        4.9291564999984985,
+        5.3598735999985365
+      ],
+      "cached_trials_seconds": [
+        0.6192139999984647,
+        1.0763813000012306,
+        0.5986704999995709
+      ],
+      "preset": "modern"
+    },
+    {
+      "batch": 8,
+      "length": 256,
+      "cached_positions": 263,
+      "uncached_seconds": 21.65643270000146,
+      "cached_seconds": 1.5867467999996734,
+      "uncached_tokens_per_sec": 94.56774476065313,
+      "cached_tokens_per_sec": 1290.6911171967838,
+      "speedup": 13.648322908233322,
+      "cache_bytes": 12926976,
+      "formula_bytes": 12926976,
+      "element_bytes": 4,
+      "difference_bytes": 0,
+      "uncached_trials_seconds": [
+        22.645761600000696,
+        21.65643270000146,
+        21.196117700001196
+      ],
+      "cached_trials_seconds": [
+        1.5867467999996734,
+        2.0510627000003296,
+        1.3738626000013028
+      ],
+      "preset": "modern"
+    },
+    {
+      "batch": 8,
+      "length": 512,
+      "cached_positions": 519,
+      "uncached_seconds": 112.33977280000181,
+      "cached_seconds": 3.9858683999991626,
+      "uncached_tokens_per_sec": 36.46081790900626,
+      "cached_tokens_per_sec": 1027.6305158496605,
+      "speedup": 28.184516277563358,
+      "cache_bytes": 25509888,
+      "formula_bytes": 25509888,
+      "element_bytes": 4,
+      "difference_bytes": 0,
+      "uncached_trials_seconds": [
+        112.33977280000181,
+        112.7940402000022,
+        111.5262928000011
+      ],
+      "cached_trials_seconds": [
+        3.941844199998741,
+        3.9858683999991626,
+        4.626807500000723
+      ],
+      "preset": "modern"
+    }
+  ],
+  "models": {
+    "baseline": {
+      "vocab_size": 1024,
+      "block_size": 1024,
+      "n_layer": 4,
+      "n_head": 6,
+      "n_embd": 192,
+      "dropout": 0.1,
+      "bias": true,
+      "tie_weights": true,
+      "use_sdpa": false,
+      "norm_type": "layernorm",
+      "pos_encoding": "learned",
+      "mlp_type": "gelu"
+    },
+    "modern": {
+      "vocab_size": 1024,
+      "block_size": 1024,
+      "n_layer": 4,
+      "n_head": 6,
+      "n_embd": 192,
+      "dropout": 0.1,
+      "bias": true,
+      "tie_weights": true,
+      "use_sdpa": false,
+      "norm_type": "rmsnorm",
+      "pos_encoding": "rope",
+      "mlp_type": "swiglu"
+    }
+  },
+  "trained_sanity": [
+    {
+      "length": 16,
+      "token_ids": [
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10
+      ],
+      "text": "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+      "matched": true
+    },
+    {
+      "length": 64,
+      "token_ids": [
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10
+      ],
+      "text": "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+      "matched": true
+    }
+  ]
+}

@@ -1,0 +1,86 @@
+{
+  "context": {
+    "seed": 42,
+    "corpus_sha256": "86c4e6aa9db7c042ec79f339dcb96d42b0075e16b8fc2e86bf0ca57e2dc565ed",
+    "implementation_sha256": {
+      "tokenizer_study.py": "96d5b4cf610910d8dd58e28a2e0138c18088fac8e531fef943c778bdf20c171e",
+      "bpe.py": "146660dcf467e4600ae5df396b6d9ca762f4bdf9873589ea8d0b5dfe1eb03dea",
+      "corpus.py": "57456cdef771711004a6f4ca568572be9f78357cbb7c527d990a609ac6048443"
+    },
+    "train_characters": 1003854,
+    "val_characters": 111540,
+    "train_bytes": 1003854,
+    "val_bytes": 111540,
+    "vocab_sizes": [
+      257,
+      512,
+      1024,
+      2048,
+      4096
+    ],
+    "probe_vocab_size": 1024
+  },
+  "measurements": [
+    {
+      "vocab_size": 257,
+      "val_tokens": 111540,
+      "bytes_per_token": 1.0,
+      "compression_vs_baseline": 1.0,
+      "train_time_ns": 128100
+    },
+    {
+      "vocab_size": 512,
+      "val_tokens": 59436,
+      "bytes_per_token": 1.8766404199475066,
+      "compression_vs_baseline": 1.8766404199475066,
+      "train_time_ns": 1588781000
+    },
+    {
+      "vocab_size": 1024,
+      "val_tokens": 49411,
+      "bytes_per_token": 2.257392078686932,
+      "compression_vs_baseline": 2.257392078686932,
+      "train_time_ns": 1332787200
+    },
+    {
+      "vocab_size": 2048,
+      "val_tokens": 43563,
+      "bytes_per_token": 2.560429722470904,
+      "compression_vs_baseline": 2.560429722470904,
+      "train_time_ns": 2223551500
+    },
+    {
+      "vocab_size": 4096,
+      "val_tokens": 38424,
+      "bytes_per_token": 2.9028732042473453,
+      "compression_vs_baseline": 2.9028732042473453,
+      "train_time_ns": 1847778600
+    }
+  ],
+  "probes": {
+    "English": {
+      "text": "Rain tapped on the kitchen window. I put the kettle on and watched a sparrow shelter under the sill. When the clouds cleared, it shook its wings and flew away.",
+      "bytes": 159,
+      "characters": 159,
+      "tokens": 66,
+      "bytes_per_token": 2.409090909090909,
+      "tokens_per_character": 0.41509433962264153
+    },
+    "Bengali": {
+      "text": "রান্নাঘরের জানালায় বৃষ্টির ফোঁটা পড়ছিল। আমি চায়ের জল বসিয়ে দেখলাম, একটি চড়ুই জানালার নিচে আশ্রয় নিয়েছে। মেঘ কেটে গেলে পাখিটি ডানা ঝেড়ে উড়ে গেল।",
+      "bytes": 408,
+      "characters": 152,
+      "tokens": 408,
+      "bytes_per_token": 1.0,
+      "tokens_per_character": 2.6842105263157894
+    },
+    "Hindi": {
+      "text": "रसोई की खिड़की पर बारिश की बूँदें गिर रही थीं। मैंने चाय का पानी चढ़ाया और देखा कि एक गौरैया खिड़की के नीचे दुबकी हुई थी। बादल छँटे तो वह पंख झाड़कर उड़ गई।",
+      "bytes": 402,
+      "characters": 156,
+      "tokens": 402,
+      "bytes_per_token": 1.0,
+      "tokens_per_character": 2.576923076923077
+    }
+  }
+}

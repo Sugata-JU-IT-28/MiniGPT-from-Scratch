@@ -1,0 +1,33 @@
+{
+  "seed": 0,
+  "device": "cpu",
+  "torch": "2.15.0+cpu",
+  "tokens_per_update": 512,
+  "cpu_threads": 2,
+  "token_budget": 212992,
+  "final_token_budget": 851968,
+  "seeds": {
+    "lr_sweep": 1,
+    "arch_ablation": 3,
+    "shape_ablation": 3,
+    "scaling": 2,
+    "tokenizer": 2
+  },
+  "estimated_seconds": {
+    "lr_sweep": 1089.64274525056,
+    "arch_ablation": 2062.546515036567,
+    "shape_ablation": 3023.628378095556,
+    "scaling": 2545.833185173206,
+    "tokenizer": 840.816952479478,
+    "final": 1112.3489523800683
+  },
+  "total_estimated_seconds": 10674.816728415435,
+  "estimate_method": "Median of eight warmed updates and evaluation batches per unique shape; five full train/val evaluations, three seconds overhead per run, and 25% headroom. Final timing uses the modern largest model proxy.",
+  "runs": {
+    "lr_sweep": 8,
+    "arch_ablation": 15,
+    "shape_ablation": 21,
+    "scaling": 12,
+    "tokenizer": 6
+  }
+}
