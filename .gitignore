@@ -1,4 +1,6 @@
 /data/
+/dataset/
+/datasets/
 /checkpoints/
 /logs/
 /.venv/
@@ -11,3 +13,24 @@ __pycache__/
 .ruff_cache/
 .coverage
 .DS_Store
+
+# Local credentials and environment files
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+/secrets/
+/credentials/
+
+# Model checkpoints and generated runtime files
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+*.tmp
+*.temp
+*.swp
+*.pid
+*.err
+*.log
